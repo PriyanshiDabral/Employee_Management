@@ -1,47 +1,109 @@
+/* Global responsive styles */
 .app {
   min-height: 100vh;
   background-color: #f5f5f5;
 }
 
-.app-header {
-  background-color: #282c34;
-  padding: 20px;
-  color: white;
-  text-align: center;
+/* Responsive breakpoints */
+@media (max-width: 768px) {
+  .MuiContainer-root {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+
+  .MuiCard-root {
+    margin-bottom: 16px;
+  }
+
+  .MuiTableContainer-root {
+    overflow-x: auto;
+  }
+
+  .MuiTypography-h4 {
+    font-size: 1.8rem !important;
+  }
+
+  .MuiTypography-h5 {
+    font-size: 1.5rem !important;
+  }
+
+  /* Hide some table columns on mobile */
+  .hide-mobile {
+    display: none !important;
+  }
 }
 
-.app-header h1 {
-  margin: 0 0 10px 0;
-  font-size: 2.5rem;
+@media (max-width: 480px) {
+  .MuiDialog-paper {
+    margin: 8px !important;
+    width: calc(100% - 16px) !important;
+  }
+
+  .MuiTypography-h4 {
+    font-size: 1.5rem !important;
+  }
+
+  .MuiTypography-h6 {
+    font-size: 1.1rem !important;
+  }
 }
 
-.app-header p {
-  margin: 0;
-  font-size: 1.2rem;
-  opacity: 0.8;
+/* Table responsive styles */
+@media (max-width: 768px) {
+  .employee-table .MuiTableCell-root {
+    padding: 8px 4px;
+    font-size: 0.875rem;
+  }
+
+  .employee-table .actions-column {
+    min-width: 80px;
+  }
 }
 
-.app-main {
-  padding: 40px 20px;
-  max-width: 1200px;
-  margin: 0 auto;
+/* Card responsive styles */
+.responsive-card {
+  height: 100%;
 }
 
-.dashboard {
-  background: white;
-  border-radius: 8px;
-  padding: 30px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+@media (max-width: 960px) {
+  .responsive-card .MuiCardContent-root {
+    padding: 16px !important;
+  }
 }
 
-.dashboard h2 {
-  margin-top: 0;
-  color: #333;
-  font-size: 1.8rem;
+/* Form responsive styles */
+@media (max-width: 768px) {
+  .MuiDialogContent-root .MuiGrid-item {
+    padding-bottom: 8px !important;
+  }
 }
 
-.dashboard p {
-  color: #666;
-  font-size: 1.1rem;
-  line-height: 1.6;
+/* Navigation responsive styles */
+@media (max-width: 768px) {
+  .MuiToolbar-root {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+
+  .MuiToolbar-root .MuiTypography-h6 {
+    font-size: 1rem !important;
+  }
+}
+
+/* Stats cards responsive */
+@media (max-width: 600px) {
+  .stats-card .MuiCardContent-root {
+    padding: 12px !important;
+  }
+
+  .stats-card .MuiTypography-h4 {
+    font-size: 1.5rem !important;
+  }
+}
+
+/* Filter section responsive */
+@media (max-width: 768px) {
+  .filter-section .MuiGrid-item {
+    margin-bottom: 8px;
+  }
 }
