@@ -138,6 +138,7 @@ const EmployeeList = ({ refreshTrigger, onEmployeeUpdate }) => {
     setStatusFilter('');
     setSortBy('name');
     setSortOrder('ASC');
+    setPage(0); // Reset pagination when clearing filters
   };
 
   const getStatusColor = (status) => {
