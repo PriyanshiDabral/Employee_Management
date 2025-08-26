@@ -66,6 +66,11 @@ const EmployeeList = ({ refreshTrigger, onEmployeeUpdate }) => {
     fetchEmployees();
   }, [refreshTrigger, search, departmentFilter, roleFilter, statusFilter, sortBy, sortOrder]);
 
+  // Reset page when filters change
+  useEffect(() => {
+    setPage(0);
+  }, [search, departmentFilter, roleFilter, statusFilter]);
+
   useEffect(() => {
     // Fetch all employees without filters to populate filter options
     fetchFilterOptions();
