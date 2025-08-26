@@ -227,9 +227,11 @@ const EmployeeList = ({ refreshTrigger, onEmployeeUpdate }) => {
                 label="Status"
               >
                 <MenuItem value="">All</MenuItem>
-                <MenuItem value="active">Active</MenuItem>
-                <MenuItem value="inactive">Inactive</MenuItem>
-                <MenuItem value="pending">Pending</MenuItem>
+                {statusOptions.map(status => (
+                  <MenuItem key={status} value={status}>
+                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
           </Grid>
