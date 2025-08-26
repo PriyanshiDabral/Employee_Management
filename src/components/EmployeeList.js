@@ -63,11 +63,32 @@ const EmployeeList = ({ refreshTrigger, onEmployeeUpdate }) => {
     fetchEmployees();
   }, [refreshTrigger, search, departmentFilter, roleFilter, statusFilter, sortBy, sortOrder]);
 
+  useEffect(() => {
+    // Fetch all employees without filters to populate filter options
+    fetchFilterOptions();
+  }, [refreshTrigger]);
+
+  const fetchFilterOptions = async () => {
+    try {
+      // Fetch all employees to get complete list of departments and roles
+      const response = await axios.get('/api/employees');
+      const allEmployees = response.data;
+
+      // Extract unique departments and roles for filters
+      const uniqueDepts = [...new Set(allEmployees.map(emp => emp.department))].filter(Boolean).sort();
+      const uniqueRoles = [...new Set(allEmployees.map(emp => emp.role))].filter(Boolean).sort();
+      setDepartments(uniqueDepts);
+      setRoles(uniqueRoles);
+    } catch (error) {
+      console.error('Error fetching filter options:', error);
+    }
+  };
+
   const fetchEmployees = async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams();
-      
+
       if (search) params.append('search', search);
       if (departmentFilter) params.append('department', departmentFilter);
       if (roleFilter) params.append('role', roleFilter);
@@ -77,13 +98,7 @@ const EmployeeList = ({ refreshTrigger, onEmployeeUpdate }) => {
 
       const response = await axios.get(`/api/employees?${params}`);
       setEmployees(response.data);
-      
-      // Extract unique departments and roles for filters
-      const uniqueDepts = [...new Set(response.data.map(emp => emp.department))];
-      const uniqueRoles = [...new Set(response.data.map(emp => emp.role))];
-      setDepartments(uniqueDepts);
-      setRoles(uniqueRoles);
-      
+
       setError('');
     } catch (error) {
       setError('Failed to fetch employees');
