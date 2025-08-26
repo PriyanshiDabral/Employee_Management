@@ -59,15 +59,44 @@ const EmployeeList = ({ refreshTrigger, onEmployeeUpdate }) => {
   const [departments, setDepartments] = useState([]);
   const [roles, setRoles] = useState([]);
 
+  // Predefined status options
+  const statusOptions = ['active', 'inactive', 'pending'];
+
   useEffect(() => {
     fetchEmployees();
   }, [refreshTrigger, search, departmentFilter, roleFilter, statusFilter, sortBy, sortOrder]);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setPage(0);
+  }, [search, departmentFilter, roleFilter, statusFilter]);
+
+  useEffect(() => {
+    // Fetch all employees without filters to populate filter options
+    fetchFilterOptions();
+  }, [refreshTrigger]);
+
+  const fetchFilterOptions = async () => {
+    try {
+      // Fetch all employees to get complete list of departments and roles
+      const response = await axios.get('/api/employees');
+      const allEmployees = response.data;
+
+      // Extract unique departments and roles for filters
+      const uniqueDepts = [...new Set(allEmployees.map(emp => emp.department))].filter(Boolean).sort();
+      const uniqueRoles = [...new Set(allEmployees.map(emp => emp.role))].filter(Boolean).sort();
+      setDepartments(uniqueDepts);
+      setRoles(uniqueRoles);
+    } catch (error) {
+      console.error('Error fetching filter options:', error);
+    }
+  };
 
   const fetchEmployees = async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams();
-      
+
       if (search) params.append('search', search);
       if (departmentFilter) params.append('department', departmentFilter);
       if (roleFilter) params.append('role', roleFilter);
@@ -75,15 +104,20 @@ const EmployeeList = ({ refreshTrigger, onEmployeeUpdate }) => {
       params.append('sortBy', sortBy);
       params.append('sortOrder', sortOrder);
 
-      const response = await axios.get(`/api/employees?${params}`);
+      const apiUrl = `/api/employees?${params}`;
+      console.log('API Request:', apiUrl);
+      console.log('Filters:', { search, departmentFilter, roleFilter, statusFilter, sortBy, sortOrder });
+
+      const response = await axios.get(apiUrl);
+      console.log('API Response:', response.data);
       setEmployees(response.data);
-      
-      // Extract unique departments and roles for filters
-      const uniqueDepts = [...new Set(response.data.map(emp => emp.department))];
-      const uniqueRoles = [...new Set(response.data.map(emp => emp.role))];
-      setDepartments(uniqueDepts);
-      setRoles(uniqueRoles);
-      
+
+      // Reset page to 0 when new data comes in and current page is beyond available pages
+      const totalPages = Math.ceil(response.data.length / rowsPerPage);
+      if (page >= totalPages && totalPages > 0) {
+        setPage(0);
+      }
+
       setError('');
     } catch (error) {
       setError('Failed to fetch employees');
@@ -120,6 +154,7 @@ const EmployeeList = ({ refreshTrigger, onEmployeeUpdate }) => {
     setStatusFilter('');
     setSortBy('name');
     setSortOrder('ASC');
+    setPage(0); // Reset pagination when clearing filters
   };
 
   const getStatusColor = (status) => {
@@ -151,6 +186,61 @@ const EmployeeList = ({ refreshTrigger, onEmployeeUpdate }) => {
         <Alert severity="error" sx={{ mb: 2 }}>
           {error}
         </Alert>
+      )}
+
+      {/* Active Filters Display */}
+      {(search || departmentFilter || roleFilter || statusFilter) && (
+        <Paper elevation={1} sx={{ p: 2, mb: 2, bgcolor: 'primary.50' }}>
+          <Typography variant="body2" color="primary" sx={{ mb: 1 }}>
+            <strong>Active Filters:</strong>
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
+            {search && (
+              <Chip
+                label={`Search: "${search}"`}
+                onDelete={() => setSearch('')}
+                size="small"
+                color="primary"
+                variant="outlined"
+              />
+            )}
+            {departmentFilter && (
+              <Chip
+                label={`Department: ${departmentFilter}`}
+                onDelete={() => setDepartmentFilter('')}
+                size="small"
+                color="primary"
+                variant="outlined"
+              />
+            )}
+            {roleFilter && (
+              <Chip
+                label={`Role: ${roleFilter}`}
+                onDelete={() => setRoleFilter('')}
+                size="small"
+                color="primary"
+                variant="outlined"
+              />
+            )}
+            {statusFilter && (
+              <Chip
+                label={`Status: ${statusFilter}`}
+                onDelete={() => setStatusFilter('')}
+                size="small"
+                color="primary"
+                variant="outlined"
+              />
+            )}
+            <Button
+              variant="text"
+              size="small"
+              onClick={handleClearFilters}
+              startIcon={<ClearIcon />}
+            >
+              Clear All
+            </Button>
+          </Box>
+        </Paper>
       )}
 
       {/* Search and Filters */}
@@ -209,9 +299,11 @@ const EmployeeList = ({ refreshTrigger, onEmployeeUpdate }) => {
                 label="Status"
               >
                 <MenuItem value="">All</MenuItem>
-                <MenuItem value="active">Active</MenuItem>
-                <MenuItem value="inactive">Inactive</MenuItem>
-                <MenuItem value="pending">Pending</MenuItem>
+                {statusOptions.map(status => (
+                  <MenuItem key={status} value={status}>
+                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
           </Grid>
@@ -275,37 +367,60 @@ const EmployeeList = ({ refreshTrigger, onEmployeeUpdate }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredEmployees.map((employee) => (
-              <TableRow key={employee.id} hover>
-                <TableCell>{employee.name}</TableCell>
-                <TableCell>{employee.email}</TableCell>
-                <TableCell>{employee.role}</TableCell>
-                <TableCell>{employee.department}</TableCell>
-                <TableCell>
-                  <Chip
-                    label={employee.status}
-                    color={getStatusColor(employee.status)}
-                    size="small"
-                  />
-                </TableCell>
-                <TableCell>
-                  <IconButton
-                    color="primary"
-                    onClick={() => handleEdit(employee)}
-                    size="small"
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    color="error"
-                    onClick={() => setDeleteConfirm(employee)}
-                    size="small"
-                  >
-                    <DeleteIcon />
-                  </IconButton>
+            {filteredEmployees.length > 0 ? (
+              filteredEmployees.map((employee) => (
+                <TableRow key={employee.id} hover>
+                  <TableCell>{employee.name}</TableCell>
+                  <TableCell>{employee.email}</TableCell>
+                  <TableCell>{employee.role}</TableCell>
+                  <TableCell>{employee.department}</TableCell>
+                  <TableCell>
+                    <Chip
+                      label={employee.status}
+                      color={getStatusColor(employee.status)}
+                      size="small"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <IconButton
+                      color="primary"
+                      onClick={() => handleEdit(employee)}
+                      size="small"
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton
+                      color="error"
+                      onClick={() => setDeleteConfirm(employee)}
+                      size="small"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={6} align="center" sx={{ py: 3 }}>
+                  <Typography variant="body1" color="textSecondary">
+                    {(search || departmentFilter || roleFilter || statusFilter)
+                      ? 'No employees found matching the selected filters. Try clearing some filters.'
+                      : 'No employees found.'
+                    }
+                  </Typography>
+                  {(search || departmentFilter || roleFilter || statusFilter) && (
+                    <Button
+                      variant="outlined"
+                      onClick={handleClearFilters}
+                      sx={{ mt: 1 }}
+                      size="small"
+                    >
+                      Clear All Filters
+                    </Button>
+                  )}
                 </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
         <TablePagination

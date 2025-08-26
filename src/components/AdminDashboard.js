@@ -6,7 +6,6 @@ import {
   Grid,
   Card,
   CardContent,
-  Fab,
   Tabs,
   Tab,
   AppBar,
@@ -15,7 +14,6 @@ import {
   IconButton
 } from '@mui/material';
 import {
-  Add as AddIcon,
   People as PeopleIcon,
   PersonAdd as PersonAddIcon,
   Dashboard as DashboardIcon,
@@ -68,24 +66,34 @@ const AdminDashboard = () => {
       </AppBar>
 
       <Container maxWidth="xl" sx={{ mt: 3, mb: 3 }}>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
-          <Tabs 
-            value={currentTab} 
+        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Tabs
+            value={currentTab}
             onChange={handleTabChange}
             variant="scrollable"
             scrollButtons="auto"
           >
-            <Tab 
-              icon={<DashboardIcon />} 
-              label="Dashboard" 
+            <Tab
+              icon={<DashboardIcon />}
+              label="Dashboard"
               iconPosition="start"
             />
-            <Tab 
-              icon={<PeopleIcon />} 
-              label="All Employees" 
+            <Tab
+              icon={<PeopleIcon />}
+              label="All Employees"
               iconPosition="start"
             />
           </Tabs>
+
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<PersonAddIcon />}
+            onClick={handleAddEmployee}
+            sx={{ ml: 2 }}
+          >
+            Add User
+          </Button>
         </Box>
 
         {currentTab === 0 && (
@@ -99,18 +107,6 @@ const AdminDashboard = () => {
           />
         )}
 
-        <Fab
-          color="primary"
-          aria-label="add"
-          sx={{
-            position: 'fixed',
-            bottom: 16,
-            right: 16,
-          }}
-          onClick={handleAddEmployee}
-        >
-          <AddIcon />
-        </Fab>
 
         <AddEmployeeModal
           open={openAddModal}
