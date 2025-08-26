@@ -99,8 +99,19 @@ const EmployeeList = ({ refreshTrigger, onEmployeeUpdate }) => {
       params.append('sortBy', sortBy);
       params.append('sortOrder', sortOrder);
 
-      const response = await axios.get(`/api/employees?${params}`);
+      const apiUrl = `/api/employees?${params}`;
+      console.log('API Request:', apiUrl);
+      console.log('Filters:', { search, departmentFilter, roleFilter, statusFilter, sortBy, sortOrder });
+
+      const response = await axios.get(apiUrl);
+      console.log('API Response:', response.data);
       setEmployees(response.data);
+
+      // Reset page to 0 when new data comes in and current page is beyond available pages
+      const totalPages = Math.ceil(response.data.length / rowsPerPage);
+      if (page >= totalPages && totalPages > 0) {
+        setPage(0);
+      }
 
       setError('');
     } catch (error) {
