@@ -6,7 +6,6 @@ import {
   Grid,
   Card,
   CardContent,
-  Fab,
   Tabs,
   Tab,
   AppBar,
@@ -15,7 +14,6 @@ import {
   IconButton
 } from '@mui/material';
 import {
-  Add as AddIcon,
   People as PeopleIcon,
   PersonAdd as PersonAddIcon,
   Dashboard as DashboardIcon,
