@@ -59,6 +59,9 @@ const EmployeeList = ({ refreshTrigger, onEmployeeUpdate }) => {
   const [departments, setDepartments] = useState([]);
   const [roles, setRoles] = useState([]);
 
+  // Predefined status options
+  const statusOptions = ['active', 'inactive', 'pending'];
+
   useEffect(() => {
     fetchEmployees();
   }, [refreshTrigger, search, departmentFilter, roleFilter, statusFilter, sortBy, sortOrder]);
