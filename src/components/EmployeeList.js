@@ -312,37 +312,60 @@ const EmployeeList = ({ refreshTrigger, onEmployeeUpdate }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredEmployees.map((employee) => (
-              <TableRow key={employee.id} hover>
-                <TableCell>{employee.name}</TableCell>
-                <TableCell>{employee.email}</TableCell>
-                <TableCell>{employee.role}</TableCell>
-                <TableCell>{employee.department}</TableCell>
-                <TableCell>
-                  <Chip
-                    label={employee.status}
-                    color={getStatusColor(employee.status)}
-                    size="small"
-                  />
-                </TableCell>
-                <TableCell>
-                  <IconButton
-                    color="primary"
-                    onClick={() => handleEdit(employee)}
-                    size="small"
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    color="error"
-                    onClick={() => setDeleteConfirm(employee)}
-                    size="small"
-                  >
-                    <DeleteIcon />
-                  </IconButton>
+            {filteredEmployees.length > 0 ? (
+              filteredEmployees.map((employee) => (
+                <TableRow key={employee.id} hover>
+                  <TableCell>{employee.name}</TableCell>
+                  <TableCell>{employee.email}</TableCell>
+                  <TableCell>{employee.role}</TableCell>
+                  <TableCell>{employee.department}</TableCell>
+                  <TableCell>
+                    <Chip
+                      label={employee.status}
+                      color={getStatusColor(employee.status)}
+                      size="small"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <IconButton
+                      color="primary"
+                      onClick={() => handleEdit(employee)}
+                      size="small"
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton
+                      color="error"
+                      onClick={() => setDeleteConfirm(employee)}
+                      size="small"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={6} align="center" sx={{ py: 3 }}>
+                  <Typography variant="body1" color="textSecondary">
+                    {(search || departmentFilter || roleFilter || statusFilter)
+                      ? 'No employees found matching the selected filters. Try clearing some filters.'
+                      : 'No employees found.'
+                    }
+                  </Typography>
+                  {(search || departmentFilter || roleFilter || statusFilter) && (
+                    <Button
+                      variant="outlined"
+                      onClick={handleClearFilters}
+                      sx={{ mt: 1 }}
+                      size="small"
+                    >
+                      Clear All Filters
+                    </Button>
+                  )}
                 </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
         <TablePagination
