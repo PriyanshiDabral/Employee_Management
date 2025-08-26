@@ -188,6 +188,61 @@ const EmployeeList = ({ refreshTrigger, onEmployeeUpdate }) => {
         </Alert>
       )}
 
+      {/* Active Filters Display */}
+      {(search || departmentFilter || roleFilter || statusFilter) && (
+        <Paper elevation={1} sx={{ p: 2, mb: 2, bgcolor: 'primary.50' }}>
+          <Typography variant="body2" color="primary" sx={{ mb: 1 }}>
+            <strong>Active Filters:</strong>
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
+            {search && (
+              <Chip
+                label={`Search: "${search}"`}
+                onDelete={() => setSearch('')}
+                size="small"
+                color="primary"
+                variant="outlined"
+              />
+            )}
+            {departmentFilter && (
+              <Chip
+                label={`Department: ${departmentFilter}`}
+                onDelete={() => setDepartmentFilter('')}
+                size="small"
+                color="primary"
+                variant="outlined"
+              />
+            )}
+            {roleFilter && (
+              <Chip
+                label={`Role: ${roleFilter}`}
+                onDelete={() => setRoleFilter('')}
+                size="small"
+                color="primary"
+                variant="outlined"
+              />
+            )}
+            {statusFilter && (
+              <Chip
+                label={`Status: ${statusFilter}`}
+                onDelete={() => setStatusFilter('')}
+                size="small"
+                color="primary"
+                variant="outlined"
+              />
+            )}
+            <Button
+              variant="text"
+              size="small"
+              onClick={handleClearFilters}
+              startIcon={<ClearIcon />}
+            >
+              Clear All
+            </Button>
+          </Box>
+        </Paper>
+      )}
+
       {/* Search and Filters */}
       <Paper elevation={2} sx={{ p: 2, mb: 3 }}>
         <Grid container spacing={2} alignItems="center">
